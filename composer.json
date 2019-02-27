@@ -1,4 +1,9 @@
 {
+    "autoload": {
+        "classmap": [
+            "src/lib/"
+        ]
+    },
     "require-dev": {
         "php-di/php-di": "^6.0",
         "phpunit/phpunit": "^8"
