@@ -6,6 +6,7 @@ use Kata\Replacer\DictionaryReplacer;
 final class DictionaryReplacerTests extends TestCase
 {
     private $replacer;
+    
     public function testCanCreate(): void
     {
         $this->replacer = new DictionaryReplacer();
@@ -17,26 +18,36 @@ final class DictionaryReplacerTests extends TestCase
         $this->testCanCreate();
     }
 
-    public function testCanHandle()
+    public function testCanHandle(): void
     {
-        $result = $this->replacer->handle("", array());
-        $this->assertEquals("", $result);
+        $input = "";
+        $dictionary = array();
+        $result = $this->replacer->handle($input, $dictionary);
+        $this->assertEquals("", $result);   
     }
 
     /**
-     * @dataProvider normalCaseProvider
+     * @dataProvider normalCaseData
      */
-    public function testGivenInputAndDictionary_WhenHandle_ThenReturnReplacedResult($input, $dictionary, $expected)
+    public function testGivenInputAndDictionary_WhenHandle_ThenReturnReplacedResult(
+        $input, $dictionary, $expected)
     {
         $result = $this->replacer->handle($input, $dictionary);
-        $this->assertEquals($expected, $result);
+        $this->assertEquals($expected, $result);   
     }
 
-    public function normalCaseProvider()
+    public function normalCaseData()
     {
-        return [
-            ["\$greeting\$ world", array("greeting" => "hello"), "hello world"]
-        ];
+        return array(
+            0 => array("\$greeting\$ world", array("greeting" => "hello"), "hello world"),
+            1 => array("\$greeting\$ \$target\$", array(
+                "greeting" => "hello",
+                "target" => "henry"
+            ), "hello henry"),
+            2 => array("\$greeting\$ greeting world", array(
+                "greeting" => "hello"
+            ), "hello greeting world")
+        );
     }
 }
 

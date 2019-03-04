@@ -2,15 +2,29 @@
 declare(strict_types=1);
 namespace Kata\Replacer;
 
+use Kata\Strategy\CharacterReplaceStrategy;
+
 final class DictionaryReplacer
 {
-    public function handle($input, $dictionary) : string
+    private $replaceStrategy;
+
+    public function __construct()
     {
-        foreach($dictionary as $key => $val)
+        $numargs = func_num_args();
+        if ($numargs == 1)
         {
-            $input = str_replace("\$$key\$", $val, $input);
+            $this->replaceStrategy = func_get_arg(0);
         }
-        return $input;
+        else
+        {
+            $this->replaceStrategy = new CharacterReplaceStrategy();
+        }
+
+    }
+
+    public function handle(string $input, array $dictionary)
+    {
+        return $this->replaceStrategy->handle($input, $dictionary);
     }
 }
 ?>
