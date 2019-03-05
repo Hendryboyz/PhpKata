@@ -48,22 +48,25 @@ final class DictionaryReplacerTests extends TestCase
         ];
     }
 
-    public function whenGivenInputAndDictionary_WhenHandle_ThenHandleByStrategy()
+    public function testWhenGivenInputAndDictionary_WhenHandle_ThenHandleByStrategy()
     {
         $input = "";
         $dictionary = array();
         $fakeConvertStrategy = $this->getMockBuilder(ReplaceStrategy::class)
                                 ->setMethods(['handle'])
                                 ->getMock();
+
         $fakeConvertStrategy->method('handle')
                             ->willReturn("");
-
-        $this->replacer = new DictionaryReplacer($fakeConvertStrategy);
-        $this->replacer->handle($input, $dictionary);
 
         $fakeConvertStrategy->expects($this->once())
                             ->method('handle')
                             ->with($this->equalTo($input), $this->equalTo($dictionary));
+
+        $this->replacer = new DictionaryReplacer($fakeConvertStrategy);
+        $this->handleAndAssert($input, $dictionary, "");
+
+        
     }
 }
 
