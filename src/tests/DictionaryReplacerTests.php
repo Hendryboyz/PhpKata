@@ -2,11 +2,12 @@
 declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 use Kata\Replacer\DictionaryReplacer;
+use Kata\Strategy\ReplaceStrategy;
 
 final class DictionaryReplacerTests extends TestCase
 {
     private $replacer;
-    
+
     public function testCanCreate(): void
     {
         $this->replacer = new DictionaryReplacer();
@@ -18,36 +19,51 @@ final class DictionaryReplacerTests extends TestCase
         $this->testCanCreate();
     }
 
-    public function testCanHandle(): void
+    public function testCanHandle()
     {
         $input = "";
         $dictionary = array();
+        $this->handleAndAssert($input, $dictionary, "");
+    }
+
+    private function handleAndAssert($input, $dictionary, $expected)
+    {
         $result = $this->replacer->handle($input, $dictionary);
-        $this->assertEquals("", $result);   
+        $this->assertEquals($expected, $result);
     }
 
     /**
      * @dataProvider normalCaseData
      */
-    public function testGivenInputAndDictionary_WhenHandle_ThenReturnReplacedResult(
-        $input, $dictionary, $expected)
+    public function testGivenInputAndDictionary_WhenHandle_ThenReturnResult($input, $dictionary, $expected)
     {
-        $result = $this->replacer->handle($input, $dictionary);
-        $this->assertEquals($expected, $result);   
+        $this->handleAndAssert($input, $dictionary, $expected);
     }
 
     public function normalCaseData()
     {
-        return array(
-            0 => array("\$greeting\$ world", array("greeting" => "hello"), "hello world"),
-            1 => array("\$greeting\$ \$target\$", array(
-                "greeting" => "hello",
-                "target" => "henry"
-            ), "hello henry"),
-            2 => array("\$greeting\$ greeting world", array(
-                "greeting" => "hello"
-            ), "hello greeting world")
-        );
+        return [
+            ["\$greeting\$ world", array("greeting" => "hello"), "hello world"],
+            ["\$greeting\$ greeting world", array("greeting" => "hello"), "hello greeting world"],
+        ];
+    }
+
+    public function whenGivenInputAndDictionary_WhenHandle_ThenHandleByStrategy()
+    {
+        $input = "";
+        $dictionary = array();
+        $fakeConvertStrategy = $this->getMockBuilder(ReplaceStrategy::class)
+                                ->setMethods(['handle'])
+                                ->getMock();
+        $fakeConvertStrategy->method('handle')
+                            ->willReturn("");
+
+        $this->replacer = new DictionaryReplacer($fakeConvertStrategy);
+        $this->replacer->handle($input, $dictionary);
+
+        $fakeConvertStrategy->expects($this->once())
+                            ->method('handle')
+                            ->with($this->equalTo($input), $this->equalTo($dictionary));
     }
 }
 
