@@ -3,15 +3,15 @@ declare(strict_types=1);
 
 namespace Kata\Replacer;
 
-class DictionaryReplacer {
-
+class DictionaryReplacer
+{
     private $replaceStrategy;
 
     public function __construct()
     {
-        if (func_num_args() == 1)
+        if (\func_num_args() == 1)
         {
-            $this->replaceStrategy = func_get_arg(0);
+            $this->replaceStrategy = \func_get_arg(0);
         }
     }
 
@@ -19,20 +19,19 @@ class DictionaryReplacer {
     {
         if (isset($this->replaceStrategy))
         {
-            return $this->replaceStrategy->handle($input, $dictionary);
+            $this->replaceStrategy->handle($input, $dictionary);
         }
-        // return $this->handleWithStrReplace($input, $dictionary);
-        return $this->handleWithCharacterReplacer($input, $dictionary);
+        return $this->handleByCharacterReplace($input, $dictionary);
     }
 
-    private function handleWithCharacterReplacer(string $input, array $dictionary): string
+    private function handleByCharacterReplace(string $input, array $dictionary): string
     {
         $result = "";
         $findKey = false;
         $key = "";
         foreach (str_split($input) as $element)
         {
-            if ($element === "$")
+            if ("$" == $element )
             {
                 if ($findKey)
                 {
@@ -52,14 +51,14 @@ class DictionaryReplacer {
                 }
                 else
                 {
-                    $result .= $element; 
+                    $result .= $element;
                 }
             }
         }
         return $result;
     }
 
-    private function handleWithStrReplace(string $input, array $dictionary): string
+    private function handleByStrReplace(string $input, array $dictionary): string
     {
         foreach ($dictionary as $key => $val)
         {

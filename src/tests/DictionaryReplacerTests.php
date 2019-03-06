@@ -19,14 +19,14 @@ final class DictionaryReplacerTests extends TestCase
         $this->testCanCreate();
     }
 
-    public function testCanHandle()
+    public function testCanHandle(): void
     {
         $input = "";
         $dictionary = array();
         $this->handleAndAssert($input, $dictionary, "");
     }
 
-    private function handleAndAssert($input, $dictionary, $expected)
+    private function handleAndAssert($input, $dictionary, $expected): void
     {
         $result = $this->replacer->handle($input, $dictionary);
         $this->assertEquals($expected, $result);
@@ -40,33 +40,33 @@ final class DictionaryReplacerTests extends TestCase
         $this->handleAndAssert($input, $dictionary, $expected);
     }
 
-    public function normalCaseData()
+    public function normalCaseData(): array
     {
-        return [
-            ["\$greeting\$ world", array("greeting" => "hello"), "hello world"],
-            ["\$greeting\$ greeting world", array("greeting" => "hello"), "hello greeting world"],
-        ];
+        return array(
+            array("\$greeting\$ world", array("greeting" => "hello"), "hello world"),
+            array("\$greeting\$ greeting world", array("greeting" => "hello"), "hello greeting world"),
+        );
     }
 
-    public function testWhenGivenInputAndDictionary_WhenHandle_ThenHandleByStrategy()
+    public function testEmptyValue_WhenHandle_ThenHandleByStrategy()
     {
+        // arrange
         $input = "";
         $dictionary = array();
-        $fakeConvertStrategy = $this->getMockBuilder(ReplaceStrategy::class)
-                                ->setMethods(['handle'])
-                                ->getMock();
-
-        $fakeConvertStrategy->method('handle')
+        $fakeReplaceStrategy = $this->getMockBuilder(ReplaceStrategy::class)
+                                    ->setMethods(['handle'])
+                                    ->getMock();
+        $fakeReplaceStrategy->method('handle')
                             ->willReturn("");
+        $this->replacer = new DictionaryReplacer($fakeReplaceStrategy);
 
-        $fakeConvertStrategy->expects($this->once())
+        // assert
+        $fakeReplaceStrategy->expects($this->once())
                             ->method('handle')
                             ->with($this->equalTo($input), $this->equalTo($dictionary));
 
-        $this->replacer = new DictionaryReplacer($fakeConvertStrategy);
+        // action
         $this->handleAndAssert($input, $dictionary, "");
-
-        
     }
 }
 
