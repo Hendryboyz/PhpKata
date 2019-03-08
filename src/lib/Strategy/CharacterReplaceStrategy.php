@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Kata\Strategy;
 
+define("KEY_NOTATION", "$");
+
 class CharacterReplaceStrategy implements ReplaceStrategy
 {
     private $result = "";
@@ -11,27 +13,27 @@ class CharacterReplaceStrategy implements ReplaceStrategy
 
     public function __construct()
     {
-        ;
+        
     }
 
     public function handle(string $input, array $dictionary): string
     {
-        
-        foreach (\str_split($input) as $element)
+        foreach (str_split($input) as $element)
         {
-            if ("$" == $element)
+            if (KEY_NOTATION == $element)
             {
-                $this->handleDollarSign($dictionary);
+                $this->handleKeyNotation($dictionary);
+                $this->findKey ^= true;
             }
             else
             {
-                $this->handlElement($element);
+                $this->handleCharacter($element);
             }
         }
         return $this->result;
     }
 
-    private function handleDollarSign(array $dictionary): void
+    private function handleKeyNotation($dictionary): void
     {
         if ($this->findKey)
         {
@@ -41,18 +43,17 @@ class CharacterReplaceStrategy implements ReplaceStrategy
         {
             $this->key = "";
         }
-        $this->findKey ^= true;
     }
 
-    private function handlElement($element): void
+    private function handleCharacter($character): void
     {
         if ($this->findKey)
         {
-            $this->key .= $element;
+            $this->key .= $character;
         }
         else
         {
-            $this->result .= $element;
+            $this->result .= $character;
         }
     }
 }

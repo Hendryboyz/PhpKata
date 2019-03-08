@@ -3,6 +3,7 @@ declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 use Kata\Replacer\DictionaryReplacer;
 use Kata\Strategy\ReplaceStrategy;
+use Kata\Strategy\StrReplaceStrategy;
 use Kata\Strategy\CharacterReplaceStrategy;
 
 final class DictionaryReplacerTests extends TestCase
@@ -20,7 +21,7 @@ final class DictionaryReplacerTests extends TestCase
         $this->testCanCreate();
     }
 
-    public function testCanHanle()
+    public function testCanHandle(): void
     {
         $input = "";
         $dictionary = array();
@@ -37,47 +38,57 @@ final class DictionaryReplacerTests extends TestCase
     {
         return array(
             array("\$greeting\$ world", array("greeting" => "hello"), "hello world"),
-            array("\$greeting\$ greeting world", array("greeting" => "hello"), "hello greeting world")
+            array("\$greeting\$ greeting world", array("greeting" => "hello"), "hello greeting world"),
+
         );
     }
 
     /**
      * @dataProvider normalCaseData
      */
-    public function testGivenNormalInputAndDictionary_WhenHandle_ThenReturnResult($input, $dictionary, $expected)
+    public function testGivenNormalInputAndDictionary_WhenHanle_ThenReturnResult($input, $dictionary, $expected)
     {
         $this->handleAndAssert($input, $dictionary, $expected);
     }
 
-    public function testGivenInputAndDictionary_WhenHandle_ThenHandleByStrategy()
+    public function testGivenEmptyInputAndDictionary_WhenHandle_ThenHandleByStrategy()
     {
-        $fakeReplaceStrategy = $this->getMockBuilder(ReplaceStrategy::class)
-                                    ->setMethods(['handle'])
+        $fakeRepalceStrategy = $this->getMockBuilder(ReplaceStrategy::class)
+                                    ->setMethods(["handle"])
                                     ->getMock();
-        $fakeReplaceStrategy->method('handle')
+        $fakeRepalceStrategy->method("handle")
                             ->willReturn("");
-        $this->replacer = new DictionaryReplacer($fakeReplaceStrategy);
+        $this->replacer = new DictionaryReplacer($fakeRepalceStrategy);
+
+        $fakeRepalceStrategy->expects($this->once())
+                            ->method("handle")
+                            ->with($this->equalTo(""), $this->equalTo(array()));
+
         $input = "";
         $dictionary = array();
-        $fakeReplaceStrategy->expects($this->once())
-                            ->method('handle')
-                            ->with($this->equalTo($input), $this->equalTo($dictionary));
-
 
         $this->handleAndAssert($input, $dictionary, "");
+
     }
 
     /**
      * @dataProvider normalCaseData
      */
-    public function testGivenNormalInputAndDictionary_WhenHandle_ThenCheckCharacterReplaceStrategyResult(
-        $input, $dictionary, $expected)
+    public function testGivenNormalCaseInputAndDictionary_WhenHandle_ThenReturnStrReplaceStrategyResult($input, $dictionary, $expected)
     {
-        $characterReplaceStrategy = new CharacterReplaceStrategy();
-        $this->replacer = new DictionaryReplacer($characterReplaceStrategy);
+        $replaceStrategy = new StrReplaceStrategy();
+        $this->replacer = new DictionaryReplacer($replaceStrategy);
+        $this->handleAndAssert($input, $dictionary, $expected);
+    }
 
+    /**
+     * @dataProvider normalCaseData
+     */ 
+    public function testGivenNormalCaseInputAndDictionary_WhenHandle_ThenReturnCharacterStrategyReuslt($input, $dictionary, $expected)
+    {
+        $replaceStrategy = new CharacterReplaceStrategy();
+        $this->replacer = new DictionaryReplacer($replaceStrategy);
         $this->handleAndAssert($input, $dictionary, $expected);
     }
 }
-
 ?>

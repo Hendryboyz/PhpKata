@@ -14,7 +14,7 @@ class DictionaryReplacer
     {
         if (func_num_args() == 1)
         {
-            $this->replaceStrategy = \func_get_arg(0); 
+            $this->replaceStrategy = \func_get_arg(0);
         }
         else
         {
