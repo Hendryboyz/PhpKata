@@ -25,18 +25,26 @@ final class BowlingGameTests extends TestCase
         $this->getScoresAndAssert(0);
     }
 
-    private function getScoresAndAssert($expected): void
+    private function getScoresAndAssert(int $expected): void
     {
         $scores = $this->game->getScores();
         $this->assertEquals($expected, $scores);
     }
-    
-    public function testGivenNormalRolls_WhenRoll_ThenGetCorrectScores(): void
+
+    public function testGivenNormalRoll_WhenRoll_ThenGetCorrectScores(): void
     {
-        $this->game->roll(7);
-        $this->game->roll(2);
-        $this->rollMany(18, 0);
-        $this->getScoresAndAssert(9);
+        $this->game->roll(3);
+        $this->game->roll(5);
+        $this->getScoresAndAssert(8);
+    }
+
+    public function testGivenSpare_WhenRoll_ThenGetCorrectScores(): void
+    {
+        $this->game->roll(5);
+        $this->game->roll(5);
+        $this->game->roll(9);
+        $this->rollMany(17, 0);
+        $this->getScoresAndAssert(28);
     }
 
     private function rollMany(int $rollTimes, int $pins): void
@@ -47,54 +55,32 @@ final class BowlingGameTests extends TestCase
         }
     }
 
-    public function testGivenSpare_WhenRoll_TehnGetCorrectScores(): void
-    {
-        $this->game->roll(7);
-        $this->game->roll(3);
-        $this->game->roll(9);
-        $this->rollMany(17, 0);
-        $this->getScoresAndAssert(28);
-    }
-
     public function testGivenStrike_WhenRoll_ThenGetCorrectScores(): void
     {
         $this->game->roll(10);
-        $this->game->roll(3);
         $this->game->roll(5);
+        $this->game->roll(3);
         $this->rollMany(16, 0);
         $this->getScoresAndAssert(26);
     }
 
-    public function testGivenPerfectGame_WhenRoll_ThenGet300Pointes(): void
+    public function testGivenPerfectGame_WhenRoll_ThenGet300Scores(): void
     {
         $this->rollMany(12, 10);
         $this->getScoresAndAssert(300);
     }
 
-    public function testGivenMoreThanPins_WhenRoll_ThenThrowInvalidArgumentException(): void
+    public function testGivenMoreThan10Pins_WhenRoll_ThenThrowInvalidArgumentException(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->game->roll(30);
+        $this->game->roll(12);
     }
 
-    /**
-     * @dataProvider moreThanPinsCase
-     */
-    public function testGivenMoreThan10PinsInFrame_WhenRoll_ThrowLogicExceptionException(
-        int $firstRoll, int $secondRoll
-    ): void
+    public function testGivenMoreThan10PinsInOneFrame_WhenRoll_ThenThrowLogicException(): void
     {
         $this->expectException(LogicException::class);
-        $this->game->roll($firstRoll);
-        $this->game->roll($secondRoll);
-    }
-
-    public function moreThanPinsCase(): array
-    {
-        return array(
-            array(2,10),
-            array(12, 1)
-        );
+        $this->game->roll(5);
+        $this->game->roll(7);
     }
 }
 ?>
