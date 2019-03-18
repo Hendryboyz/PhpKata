@@ -10,6 +10,7 @@ Please ignore the file not under src/lib/ and src/tests/, they just a di test.
 ## Practice List
  * [Dictionary Replacer](http://codingdojo.org/kata/DictionaryReplacer/) 
  * [Bowling Game](http://codingdojo.org/kata/Bowling/) : an example from Agile Principles, Patterns and Practices 
+ * [Roman Numberal](http://codingdojo.org/kata/RomanNumerals/): Convert from decimal and roman.
 
 ## other version
  * [C# Kata](https://github.com/Hendryboyz/CSharpKata)TDD Bowling Game - PHP
