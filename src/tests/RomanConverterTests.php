@@ -1,4 +1,5 @@
 <?php
+
 declare (strict_types = 1);
 
 use PHPUnit\Framework\TestCase;
@@ -20,44 +21,53 @@ class RomanConverterTests extends TestCase {
         $this->convertFromDecimalAndAssert(1, "I");
     }
 
-    private function convertFromDecimalAndAssert(int $decimal, string $expected): void {
+    private function convertFromDecimalAndAssert(
+        int $decimal, 
+        string $expected
+    ): void {
         $roman = $this->converter->convertFromDecimal($decimal);
         $this->assertEquals($expected, $roman);
     }
 
     /**
-     * @dataProvider lessThan10Case
+     * @dataProvider lessEqualTo10
      */
-    public function testGivenNumberLessThan10_WhenConvertFromDecimal_ThenReturnRoman(int $decimal, string $expected): void {
+    public function testGivenDecimalLessEqualTo10_WhenConvertFromDecimal_ThenReturnRoman(
+        int $decimal,
+        string $expected
+    ): void {
         $this->convertFromDecimalAndAssert($decimal, $expected);
     }
 
-    public function lessThan10Case(): array {
+    public function lessEqualTo10(): array {
         return array(
             array(2, "II"),
             array(3, "III"),
             array(5, "V"),
             array(10, "X"),
-            array(6, "VI"),
             array(4, "IV"),
             array(9, "IX")
         );
     }
 
     /**
-     * @dataProvider romanBaseDeciaml
+     * @dataProvider allDecimalBase
      */
-    public function testGivenRomanBaseDecimal_WhenConvertFromDecimal_ThenReturnRoman(int $decimal, string $expected): void {
+    public function testGivenAllDecimalBase_WhenConvertFromDecimal_ThenReturnRoman(
+        int $decimal,
+        string $expected
+    ): void {
         $this->convertFromDecimalAndAssert($decimal, $expected);
     }
 
-    public function romanBaseDeciaml(): array {
+    public function allDecimalBase(): array {
         return array(
             array(50, "L"),
             array(100, "C"),
             array(500, "D"),
-            array(1000, "M")
+            array(1000, "M"),
         );
     }
 }
+?>
 
