@@ -1,16 +1,15 @@
 <?php
-
 declare (strict_types = 1);
 
 namespace Kata\Converter;
 
 class RomanConverter {
 
-    private $baseDecimals;
+    private const baseDecimals = [ 1000, 500, 100, 50, 10, 5, 1 ];
+
     private $decimalRomanMap;
 
     public function __construct() {
-        $this->baseDecimals = [1000, 500, 100, 50, 10, 5, 1];
         $this->decimalRomanMap = array(
             1 => "I",
             5 => "V",
@@ -22,9 +21,10 @@ class RomanConverter {
         );
     }
 
+
     public function convertFromDecimal(int $decimal): string {
         $roman = "";
-        foreach ($this->baseDecimals as $index => $eachBase) {
+        foreach (self::baseDecimals as $index => $eachBase) {
             $decrease = $this->getDecrease($index);
             $decreaseNumber = $eachBase - $decrease;
             while ($decreaseNumber <= $decimal) {
@@ -41,17 +41,26 @@ class RomanConverter {
         return $roman;
     }
 
-    private function getDecrease(int $baseIndex): int {
-        $decrease = count($this->baseDecimals) == $baseIndex + 1 ?
-            0 : $this->baseDecimals[$baseIndex + 1];
+
+    private function getDecrease($baseIndex): int {
+        if ($this->isLastBaseDecimal($baseIndex)) {
+            return 0;
+        }
+        $decrease = self::baseDecimals[$baseIndex + 1];
         if (!$this->isValidDecrease($decrease)) {
-            $decrease = $this->baseDecimals[$baseIndex + 2];
+            $decrease = self::baseDecimals[$baseIndex + 2];
         }
         return $decrease;
     }
 
-    private function isValidDecrease(int $decrease): bool {
-        return 5 != $decrease && 500 != $decrease && 50 != $decrease;
+
+    private function isLastBaseDecimal($baseIndex): bool {
+        return count(self::baseDecimals) - 1 == $baseIndex;
+    }
+
+    
+    private function isValidDecrease($decrease): bool {
+        return (5 != $decrease && 50 != $decrease && 500 != $decrease);
     }
 }
 ?>
