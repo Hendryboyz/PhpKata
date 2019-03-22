@@ -1,4 +1,4 @@
-<?php
+<?php 
 declare (strict_types = 1);
 
 namespace Kata\Converter;
@@ -22,15 +22,18 @@ class RomanConverter {
     }
 
 
-    public function convertFromDecimal(int $decimal): string {
+    public function convertFromDecimal(int $decimal) {
+        if (0 == $decimal) {
+            throw new \InvalidArgumentException();
+        }
         $roman = "";
-        foreach (self::baseDecimals as $index => $eachBase) {
-            $decrease = $this->getDecrease($index);
-            $decreaseNumber = $eachBase - $decrease;
-            while ($decreaseNumber <= $decimal) {
-                if ($decimal < $eachBase) {
+        foreach ( self::baseDecimals as $baseIndex => $eachBase ) {
+            $decrease = $this->getDecrease($baseIndex);
+            $decreaseNuumber = $eachBase - $decrease;
+            while ( $decreaseNuumber <= $decimal ) {
+                if ( $decimal < $eachBase ) {
                     $roman .= $this->decimalRomanMap[$decrease];
-                    $decimal -= $decreaseNumber;
+                    $decimal -= $decreaseNuumber;
                 }
                 else {
                     $decimal -= $eachBase;
@@ -42,25 +45,25 @@ class RomanConverter {
     }
 
 
-    private function getDecrease($baseIndex): int {
+    private function getDecrease(int $baseIndex): int {
         if ($this->isLastBaseDecimal($baseIndex)) {
             return 0;
         }
         $decrease = self::baseDecimals[$baseIndex + 1];
-        if (!$this->isValidDecrease($decrease)) {
+        if ( !$this->isValidDecrease($decrease) ) {
             $decrease = self::baseDecimals[$baseIndex + 2];
         }
         return $decrease;
     }
 
 
-    private function isLastBaseDecimal($baseIndex): bool {
+    private function isLastBaseDecimal(int $baseIndex): bool {
         return count(self::baseDecimals) - 1 == $baseIndex;
     }
 
-    
-    private function isValidDecrease($decrease): bool {
-        return (5 != $decrease && 50 != $decrease && 500 != $decrease);
+
+    private function isValidDecrease(int $decrease): bool {
+        return 500 != $decrease && 50 != $decrease && 5 != $decrease;
     }
 }
 ?>
