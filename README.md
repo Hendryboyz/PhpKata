@@ -11,6 +11,7 @@ Please ignore the file not under src/lib/ and src/tests/, they just a di test.
  * [Dictionary Replacer](http://codingdojo.org/kata/DictionaryReplacer/) 
  * [Bowling Game](http://codingdojo.org/kata/Bowling/) : an example from Agile Principles, Patterns and Practices 
  * [Roman Numberal](http://codingdojo.org/kata/RomanNumerals/): Convert from decimal and roman.
+ * [Fizz Buzz](http://codingdojo.org/kata/FizzBuzz/)
 
 ## other version
  * [C# Kata](https://github.com/Hendryboyz/CSharpKata)TDD Bowling Game - PHP
