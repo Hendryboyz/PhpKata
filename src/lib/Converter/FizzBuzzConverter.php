@@ -1,38 +1,60 @@
 <?php
-declare (strict_types = 1);
+declare(strict_types=1);
 
 namespace Kata\Converter;
 
 class FizzBuzzConverter {
 
-    const FIZZ = "Fizz";
-    const BUZZ = "Buzz";
+    public const FIZZ = "Fizz";
+    public const BUZZ = "Buzz";
 
-    public function __construct() {
-        ;
+    private $convertStrategy;
+
+    public function __construct() { }
+
+
+    public function setConvertStrategy($convertStrategy): void {
+        $this->convertStrategy = $convertStrategy;
     }
+
 
     public function convert(int $number): string {
-        $result = $this->convertFizz($number);
-        $result .= $this->convertBuzz($number);
-        if (empty($result)) {
-            $result .= $number;
+        if (isset($this->convertStrategy)) {
+            $result = $this->convertStrategy->convert($number);
         }
-        return $result;
+        else {
+            $result = $this->doConvert($number);
+        }
+
+        if (empty($result)) {
+            return \strval($number);
+        }
+        else {
+            return $result;
+        }
     }
 
-    public function convertFizz(int $number): string {
+
+    private function doConvert(int $number): string {
+        $result = $this->convertFizz($number);
+        $result .= $this->convertBuzz($number);
+        return $result;
+    }
+    
+
+    private function convertFizz(int $number): string {
         if (0 == ($number % 3)) {
-            return self::FIZZ;
+            return  self::FIZZ;
         }
         else {
             return "";
         }
     }
 
-    public function convertBuzz(int $number): string {
+
+    private function convertBuzz(int $number): string {
         if (0 == ($number % 5)) {
-            return self::BUZZ;
+            return  self::BUZZ;
         }
         else {
             return "";
