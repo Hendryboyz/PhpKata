@@ -21,8 +21,20 @@ class FizzBuzzConverter {
         $this->convertStrategy = $convertStrategy;
     }
 
+
     public function convert(int $number) : string {
-        $result = $this->doConvert($number);
+        if (isset($this->convertStrategy)) {
+            return $this->convertStrategy->convert($number);
+        }
+        else {
+            return $this->doConvert($number);
+        }
+        
+    }
+
+
+    private function doConvert(int $number) : string {
+        $result = $this->convertString($number);
         if (empty($result)) {
             return \strval($number);
         }
@@ -32,17 +44,13 @@ class FizzBuzzConverter {
     }
 
 
-    private function doConvert(int $number) : string {
-        if (isset($this->convertStrategy)) {
-            return $this->convertStrategy->convert($number);
-        }
-        else {
-            $result = $this->convertFizz($number);
-            return ($result .= $this->convertBuzz($number));
-        }
+    private function convertString(int $number) : string {
+        $result = $this->convertFizz($number);
+        $result .= $this->convertBuzz($number);
+        return $result;
     }
 
-
+    
     private function convertFizz(int $number) : string {
         if (0 == ($number % 3)) {
             return self::FIZZ;

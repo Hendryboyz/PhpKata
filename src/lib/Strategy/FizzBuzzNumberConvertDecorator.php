@@ -1,27 +1,32 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Kata\Strategy;
 
-class RealNumberConvertStrategy implements NumberConvertStrategyInterface {
+class FizzBuzzNumberConverterDecorator extends NumberConverterDecorator {
 
-    private const FIZZ = "Fizz";
-    private const BUZZ = "Buzz";
+    public const FIZZ = "Fizz";
+    public const BUZZ = "Buzz";
+
+    public function __construct(NumberConvertStrategyInterface $numberConvertStrategy)
+    {
+        parent::__construct($numberConvertStrategy);
+    }
 
 
     public function convert(int $number) : string {
         $result = $this->convertFizz($number);
         $result .= $this->convertBuzz($number);
-
         if (empty($result)) {
-            return \strval($number);
+            return $this->numberConvertStrategy->convert($number);
         }
         else {
             return $result;
         }
     }
 
-
+    
     private function convertFizz(int $number) : string {
         if (0 == ($number % 3)) {
             return self::FIZZ;
@@ -40,6 +45,5 @@ class RealNumberConvertStrategy implements NumberConvertStrategyInterface {
             return "";
         }
     }
-
 }
 ?>

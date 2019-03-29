@@ -4,10 +4,10 @@ declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 use Kata\Converter\FizzBuzzConverter;
 use Kata\Strategy\NumberConvertStrategyInterface;
-use Kata\Strategy\RealNumberConvertStrategy;
+use Kata\Strategy\NumberConvertStrategy;
+use Kata\Strategy\FizzBuzzNumberConverterDecorator;
 
 class FizzBuzzTests extends TestCase {
-    
     private $converter;
 
     public function testCanCreate() : void {
@@ -41,11 +41,11 @@ class FizzBuzzTests extends TestCase {
 
     public function numberNotDivisibleBy3Or5() : array {
         return array(
-            array(2, "2"),
-            array(13, "13"),
-            array(23, "23"),
-            array(79, "79"),
-            array(83, "83")
+            array(1, "1"),
+            array(97, "97"),
+            array(19, "19"),
+            array(37, "37"),
+            array(67, "67")
         );
     }
 
@@ -64,10 +64,10 @@ class FizzBuzzTests extends TestCase {
     public function numberDivisibleBy3() : array {
         return array(
             array(3),
-            array(21),
-            array(33),
-            array(42),
-            array(57)
+            array(69),
+            array(96),
+            array(18),
+            array(24)
         );
     }
 
@@ -75,11 +75,11 @@ class FizzBuzzTests extends TestCase {
     /**
      * @dataProvider numberDivisibleBy5
      */
-    public function testGivenNumberDivisibleBy5_WhenConvert_ThenReturnBuzz(
+    public function testGivenNumberDivisibleBy5_WhenConvert_ThenReturnFizz(
         int $number
     ) : void {
         $result = $this->converter->convert($number);
-        $this->assertEquals(FizzBuzzConverter::BUZZ, $result);
+        $this->assertEquals(FizzBuzzConverter:: BUZZ, $result);
     }
 
 
@@ -88,8 +88,8 @@ class FizzBuzzTests extends TestCase {
             array(5),
             array(35),
             array(65),
-            array(50),
-            array(85)
+            array(95),
+            array(40)
         );
     }
 
@@ -97,7 +97,7 @@ class FizzBuzzTests extends TestCase {
     /**
      * @dataProvider numberDivisibleBy3And5
      */
-    public function testGivenNumberDivisibleBy3And5_WhenConvert_ThenReturnFizzBuzz(
+    public function testGivenNumberDivisibleBy3And5_WhenConvert_ThenReturnNumberString(
         int $number
     ) : void {
         $result = $this->converter->convert($number);
@@ -109,58 +109,55 @@ class FizzBuzzTests extends TestCase {
     public function numberDivisibleBy3And5() : array {
         return array(
             array(15),
-            array(30),
-            array(45),
             array(60),
-            array(75)
+            array(30),
+            array(75),
+            array(45)
         );
     }
 
 
-    /**
-     * @dataProvider anyNumber
-     */
-    public function testGivenAnyNumber_WhenConvert_ThenConvertByNumberConvertStrategyInterface(
-        int $number,
-        string $expected
-    ) : void {
-        $fakeConvertStrategy = $this->getMockBuilder(NumberConvertStrategyInterface::class)
-                                    ->setMethods(['convert'])
-                                    ->getMock();
-
-        $fakeConvertStrategy->expects($this->once())
-                            ->method("convert")
-                            ->with($this->equalTo($number));
-
-        $this->converter->setConvertStrategy($fakeConvertStrategy);
-        $this->converter->convert($number);
+    public function testGivenNumberAndConvertStrategy_WhenConvert_ThenConvertByStrategy() : void {
+        $givenNumber = 30;
+        $fakeNumberConvertStrategy = $this->getMockBuilder(NumberConvertStrategyInterface::class)
+                                          ->setMethods(["convert"])
+                                          ->getMock();
+        $fakeNumberConvertStrategy->expects($this->once())
+                                  ->method('convert')
+                                  ->with($this->equalTo($givenNumber));
+        
+        $this->converter->setConvertStrategy($fakeNumberConvertStrategy);
+        $this->converter->convert($givenNumber);
     }
 
 
-    public function anyNumber() : array {
+    /**
+     * @dataProvider randomNumber
+     */
+    public function testGivenRandomNumber_WhenConvert_ThenReturnNumberString(
+        int $number,
+        string $expected
+    ) : void {
+        $numberConvertStrategy = new NumberConvertStrategy();
+        $fizzBuzzConvertDecoratore = 
+            new FizzBuzzNumberConverterDecorator($numberConvertStrategy);
+        $this->converter->setConvertStrategy($fizzBuzzConvertDecoratore);
+
+        $result = $this->converter->convert($number);
+
+        $this->assertEquals($expected, $result);
+    }
+
+
+    public function randomNumber() : array {
         $fizzBuzz = FizzBuzzConverter::FIZZ . FizzBuzzConverter::BUZZ;
         return array(
-            array(3, FizzBuzzConverter::FIZZ),
-            array(17, "17"),
             array(45, $fizzBuzz),
-            array(55, FizzBuzzConverter::BUZZ),
-            array(90, $fizzBuzz)
+            array(95, FizzBuzzConverter::BUZZ),
+            array(24, FizzBuzzConverter::FIZZ),
+            array(37, "37"),
+            array(89, "89")
         );
-    }
-
-
-    /**
-     * @dataProvider anyNumber
-     */
-    public function testGivenAnyNumberAndRealNumberConvertStrategy_WhenConvert_ThenReturnResult(
-        int $number,
-        string $expected
-    ) : void {
-        $realNumberConvertStrategy = new RealNumberConvertStrategy();
-
-        $this->converter->setConvertStrategy($realNumberConvertStrategy);
-        $result = $this->converter->convert($number);
-        $this->assertEquals($expected, $result);
     }
 }
 ?>
