@@ -75,11 +75,11 @@ class FizzBuzzTests extends TestCase {
     /**
      * @dataProvider numberDivisibleBy5
      */
-    public function testGivenNumberDivisibleBy5_WhenConvert_ThenReturnFizz(
+    public function testGivenNumberDivisibleBy5_WhenConvert_ThenReturnBuzz(
         int $number
     ) : void {
         $result = $this->converter->convert($number);
-        $this->assertEquals(FizzBuzzConverter:: BUZZ, $result);
+        $this->assertEquals(FizzBuzzConverter::BUZZ, $result);
     }
 
 
@@ -97,7 +97,7 @@ class FizzBuzzTests extends TestCase {
     /**
      * @dataProvider numberDivisibleBy3And5
      */
-    public function testGivenNumberDivisibleBy3And5_WhenConvert_ThenReturnNumberString(
+    public function testGivenNumberDivisibleBy3And5_WhenConvert_ThenReturnFizzBuzz(
         int $number
     ) : void {
         $result = $this->converter->convert($number);
