@@ -4,7 +4,7 @@ declare(strict_types = 1);
 use PHPUnit\Framework\TestCase;
 use Kata\Converter\FooBarQixConverter;
 
-class FooBarQixTests extends TestCase {
+class FooBarQixTests extends TestCase  {
 
     private $converter;
 
@@ -20,30 +20,34 @@ class FooBarQixTests extends TestCase {
 
 
     public function testCanConvert() : void {
-        $result = $this->converter->convert(1);
-        $this->assertEquals("1", $result);
+        $this->convertAndAssert(1, "1");
     }
 
 
     /**
-     * @dataProvider normalNumber
+     * @dataProvider notFooBarQixPrime
      */
-    public function testGivenNormalNumber_WhenConvert_ThenReturnNumberString(
+    public function testGivenNotFooBarQixPrime_WhenConvert_ThenReturnNumberString(
         int $number,
         string $expected
     ) : void {
+        $this->convertAndAssert($number, $expected);
+    }
+
+
+    private function convertAndAssert(int $number, string $expected) : void {
         $result = $this->converter->convert($number);
         $this->assertEquals($expected, $result);
     }
 
 
-    public function normalNumber() : array {
+    public function notFooBarQixPrime() : array {
         return array(
             array(2, "2"),
-            array(11, "11"),
-            array(19, "19"),
             array(61, "61"),
-            array(89, "89"),
+            array(19, "19"),
+            array(29, "29"),
+            array(89, "89")
         );
     }
 
@@ -51,12 +55,11 @@ class FooBarQixTests extends TestCase {
     /**
      * @dataProvider numberDivisibleByThreeFiveSeven
      */
-    public function testGivenNumberDivisibleByThreeFiveSeven_WhenConvert_ThenReturnFooBarQixCombination(
+    public function testGivenFooBarQixDivisibleNumber_WhenConvert_ThenReturnFooBarQixCombination(
         int $number,
         string $expected
     ) : void {
-        $result = $this->converter->convert($number);
-        $this->assertEquals($expected, $result);
+        $this->convertAndAssert($number, $expected);
     }
 
 
@@ -74,18 +77,17 @@ class FooBarQixTests extends TestCase {
 
 
     /**
-     * @dataProvider numberContainThreeFiveSeven
+     * @dataProvider numberContainsThreeFiveSeven
      */
-    public function testGivenNumberContainThreeFiveSeven_WhenConvert_ThenReturnFooBarQixCombination(
+    public function testGivenNumberContainsFooBarQix_WhenConvert_ThenReturnFooBarQixCombination(
         int $number,
         string $expected
     ) : void {
-        $result = $this->converter->convert($number);
-        $this->assertEquals($expected, $result);
+        $this->convertAndAssert($number, $expected);
     }
 
 
-    public function numberContainThreeFiveSeven() : array {
+    public function numberContainsThreeFiveSeven() : array {
         return array(
             array(5, FooBarQixConverter::BAR . FooBarQixConverter::BAR),
             array(3, FooBarQixConverter::FOO . FooBarQixConverter::FOO),
@@ -93,6 +95,27 @@ class FooBarQixTests extends TestCase {
             array(37, FooBarQixConverter::FOO . FooBarQixConverter::QIX),
             array(35, FooBarQixConverter::BAR . FooBarQixConverter::QIX . 
                 FooBarQixConverter::FOO . FooBarQixConverter::BAR)
+        );
+    }
+
+
+    /**
+     * @dataProvider numberContainZero
+     */
+    public function givenNumberContainZero_WhenConvert_ThenReturnStringContainStarSign(int $number,
+        string $expected
+    ) : void {
+        $this->convertAndAssert($number, $expected);
+    }
+
+
+    public function numberContainZero() : array {
+        return array(
+            array(101, "1*1"),
+            array(303, FooBarQixConverter::FOO . FooBarQixConverter::FOO . "*" . FooBarQixConverter::FOO),
+            array(105, FooBarQixConverter::FOO . FooBarQixConverter::BAR . 
+                FooBarQixConverter::QIX . "*" . FooBarQixConverter::BAR),
+            array(10101, FooBarQixConverter::FOO . FooBarQixConverter::QIX . "**")
         );
     }
 }

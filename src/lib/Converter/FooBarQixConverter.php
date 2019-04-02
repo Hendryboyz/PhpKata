@@ -1,4 +1,4 @@
-<?php
+<?php 
 declare(strict_types = 1);
 
 namespace Kata\Converter;
@@ -8,11 +8,16 @@ class FooBarQixConverter {
     public const FOO = "Foo";
     public const BAR = "Bar";
     public const QIX = "Qix";
+    public const STAR_SIGN = "*";
 
-    public function convert(int $number) {
-        $result = $this->convertByDivisor($number);
-        $result .= $this->convertByNumberDigit($number);
+    public function __construct() {
         
+    }
+
+
+    public function convert(int $number) : string {
+        $result = $this->convertByDivisor($number);
+        $result .= $this->convertByDigitElement($number);
         if (!empty($result)) {
             return $result;
         }
@@ -24,36 +29,50 @@ class FooBarQixConverter {
 
     private function convertByDivisor(int $number) : string {
         $result = "";
-        if (0 == ($number % 3)) {
+        if ($this->isNumberDivisible($number, 3)) {
             $result .= self::FOO;
         }
-        if (0 == ($number % 5)) {
+        if ($this->isNumberDivisible($number, 5)) {
             $result .= self::BAR;
         }
-        if (0 == ($number % 7)) {
+        if ($this->isNumberDivisible($number, 7)) {
             $result .= self::QIX;
         }
         return $result;
     }
 
-    private function convertByNumberDigit(int $number) : string {
+    
+    private function isNumberDivisible(int $number, int $divisor) : bool {
+        return 0 == ($number % $divisor);
+    }
+
+
+    private function convertByDigitElement($number) : string {
         $result = "";
-        foreach ($this->convertToDigitArray($number) as $eachNumberCharacter) {
-            if ('3' == $eachNumberCharacter) {
-                $result .= self::FOO;
-            }
-            if ('5' == $eachNumberCharacter) {
-                $result .= self::BAR;
-            }
-            if ('7' == $eachNumberCharacter) {
-                $result .= self::QIX;
+        foreach ($this->toDigitArray($number) as $eachDigit) {
+            switch($eachDigit) {
+                case '3' : 
+                    $result .= self::FOO;
+                    break;
+                case '5' : 
+                    $result .= self::BAR;
+                    break;
+                case '7' : 
+                    $result .= self::QIX;
+                    break;
+                // case '0' : 
+                //     $result .= self::STAR_SIGN;
+                //     break;
+                default : 
+                    break;
             }
         }
         return $result;
     }
 
-    private function convertToDigitArray(int $number) : array {
-        return \str_split(\strval($number));
+
+    private function toDigitArray(int $number) : array {
+        return str_split(\strval($number));
     }
 }
 
