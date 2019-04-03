@@ -4,8 +4,7 @@ declare(strict_types = 1);
 use PHPUnit\Framework\TestCase;
 use Kata\Converter\FooBarQixConverter;
 
-class FooBarQixTests extends TestCase  {
-
+class FooBarQixTests extends TestCase {
     private $converter;
 
     public function testCanCreate() : void {
@@ -28,16 +27,10 @@ class FooBarQixTests extends TestCase  {
      * @dataProvider notFooBarQixPrime
      */
     public function testGivenNotFooBarQixPrime_WhenConvert_ThenReturnNumberString(
-        int $number,
+        int $number, 
         string $expected
     ) : void {
         $this->convertAndAssert($number, $expected);
-    }
-
-
-    private function convertAndAssert(int $number, string $expected) : void {
-        $result = $this->converter->convert($number);
-        $this->assertEquals($expected, $result);
     }
 
 
@@ -62,16 +55,22 @@ class FooBarQixTests extends TestCase  {
         $this->convertAndAssert($number, $expected);
     }
 
+    
+    private function convertAndAssert(int $number, string $expected) : void {
+        $result = $this->converter->convert($number);
+        $this->assertEquals($expected, $result);
+    }
+
 
     public function numberDivisibleByThreeFiveSeven() : array {
         $fooBar = FooBarQixConverter::FOO . FooBarQixConverter::BAR;
         $fooQix = FooBarQixConverter::FOO . FooBarQixConverter::QIX;
         return array(
             array(12, FooBarQixConverter::FOO),
-            array(21, $fooQix),
-            array(60, $fooBar),
             array(49, FooBarQixConverter::QIX),
-            array(10, FooBarQixConverter::BAR)
+            array(10, FooBarQixConverter::BAR . FooBarQixConverter::STAR_SIGN),
+            array(21, $fooQix),
+            array(60, $fooBar . FooBarQixConverter::STAR_SIGN)
         );
     }
 
@@ -102,7 +101,8 @@ class FooBarQixTests extends TestCase  {
     /**
      * @dataProvider numberContainZero
      */
-    public function givenNumberContainZero_WhenConvert_ThenReturnStringContainStarSign(int $number,
+    public function testGivenNumberContainZero_WhenConvert_ThenReturnStringContainStarSign(
+        int $number,
         string $expected
     ) : void {
         $this->convertAndAssert($number, $expected);
