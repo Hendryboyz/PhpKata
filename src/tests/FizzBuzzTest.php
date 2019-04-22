@@ -7,7 +7,7 @@ use Kata\Strategy\NumberConvertStrategyInterface;
 use Kata\Strategy\NumberConvertStrategy;
 use Kata\Strategy\FizzBuzzNumberConverterDecorator;
 
-class FizzBuzzTests extends TestCase {
+class FizzBuzzTest extends TestCase {
     private $converter;
 
     public function testCanCreate() : void {

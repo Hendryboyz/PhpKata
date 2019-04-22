@@ -4,7 +4,7 @@ declare (strict_types = 1);
 use PHPUnit\Framework\TestCase;
 use Kata\Converter\RomanConverter;
 
-class RomanConverterTests extends TestCase {
+class RomanConverterTest extends TestCase {
 
     private $converter;
 

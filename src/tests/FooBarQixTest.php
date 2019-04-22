@@ -4,7 +4,7 @@ declare(strict_types = 1);
 use PHPUnit\Framework\TestCase;
 use Kata\Converter\FooBarQixConverter;
 
-class FooBarQixTests extends TestCase {
+class FooBarQixTest extends TestCase {
     private $converter;
 
     public function testCanCreate() : void {

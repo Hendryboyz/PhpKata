@@ -4,7 +4,7 @@ declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 use Kata\Game\Bowling;
 
-final class BowlingGameTests extends TestCase
+final class BowlingGameTest extends TestCase
 {
     private $game;
 

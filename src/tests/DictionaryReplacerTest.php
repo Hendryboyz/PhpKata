@@ -6,7 +6,7 @@ use Kata\Strategy\ReplaceStrategy;
 use Kata\Strategy\StrReplaceStrategy;
 use Kata\Strategy\CharacterReplaceStrategy;
 
-final class DictionaryReplacerTests extends TestCase
+final class DictionaryReplacerTest extends TestCase
 {
     private $replacer;
 
