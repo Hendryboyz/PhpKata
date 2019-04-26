@@ -2,39 +2,42 @@
 declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
+use Kata\Potter\Cart;
 
 class PotterKataTest extends TestCase {
 
     private $cart;
 
-
-    public function testCanCreate() : void {
-        $this->cart = new Kata\Potter\Cart();
+    public function testCanCreate(): void {
+        $this->cart = new Cart();
         $this->assertNotNull($this->cart);
     }
 
 
-    public function setUp() : void {
+    public function setUp(): void {
         $this->testCanCreate();
     }
 
-    public function testCanCheckout() : void {
-        $this->checkoutAndAssert([0], 8.0);
+
+    public function testCanCheckout(): void {
+        $this->checkoutBooksAndAssert([0], 8.0);
     }
 
-    private function checkoutAndAssert(array $list, float $expected) : void {
-        $prices = $this->cart->checkout($list);
+
+    private function checkoutBooksAndAssert(array $books, float $expected): void {
+        $prices = $this->cart->checkout($books);
         $this->assertEquals($expected, $prices);
     }
+
 
     /**
      * @dataProvider sameBookOrder
      */
-    public function testGivenSameBookOrder_WhenCheckout_ThenReturnPrice(
-        array $books, 
+    public function testGivenSameBookOrder_WhenCheckout_ThenReturnPrices(
+        array $books,
         float $expected
-    ) : void {
-        $this->checkoutAndAssert($books, $expected);
+    ): void {
+        $this->checkoutBooksAndAssert($books, $expected);
     }
 
     public function sameBookOrder(): array {
@@ -46,14 +49,15 @@ class PotterKataTest extends TestCase {
         );
     }
 
+
     /**
      * @dataProvider basicDiscount
      */
-    public function testGivenBasicDiscount_WhenCheckout_ThenReturnCorrectDiscountPrice(
+    public function testGivenBasicDiscount_WhenCheckout_ThenReturnPrices(
         array $books,
         float $expected
-    ) : void {
-        $this->checkoutAndAssert($books, $expected);
+    ): void {
+        $this->checkoutBooksAndAssert($books, $expected);
     }
 
     public function basicDiscount() : array {
@@ -62,6 +66,48 @@ class PotterKataTest extends TestCase {
             array([0, 2, 4], 24.0 * 0.9),
             array([0, 1, 2, 4], 32.0 * 0.8),
             array([0, 1, 2, 3, 4], 40.0 * 0.75),
+        );
+    }
+
+
+    /**
+     * @dataProvider multipleDiscount
+     */
+    public function testGivenMultipleDiscount_WhenCheckout_ThenReturnPrices(
+        array $books,
+        float $expected
+    ): void {
+        $this->checkoutBooksAndAssert($books, $expected);
+    }
+
+    public function multipleDiscount(): array {
+        return array(
+            array([0, 0, 1], 8 + (8 * 2 * 0.95)),
+            array([0, 0, 1, 1], 2 * (8 * 2 * 0.95)),
+            array([0, 0, 1, 2, 2, 3], (8 * 4 * 0.8) + (8 * 2 * 0.95)),
+            array([0, 1, 1, 2, 3, 4], 8 + (8 * 5 * 0.75))
+        );
+    }
+
+
+    /**
+     * @dataProvider specialDiscount
+     */
+    public function testGivenSpecialDiscount_ThenCheckout_ThenReturnPrice(
+        array $books,
+        float $expected
+    ) : void {
+        $this->checkoutBooksAndAssert($books, $expected);
+    }
+
+    public function specialDiscount(): array {
+        return array(
+            array([0, 0, 1, 1, 2, 2, 3, 4], 2 * (8 * 4 * 0.8)),
+            array([0, 0, 0, 0, 0, 
+            1, 1, 1, 1, 1, 
+            2, 2, 2, 2, 
+            3, 3, 3, 3, 3, 
+            4, 4, 4, 4], 3 * (8 * 5 * 0.75) + 2 * (8 * 4 * 0.8))
         );
     }
 }
