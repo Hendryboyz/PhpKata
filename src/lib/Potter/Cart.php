@@ -1,58 +1,67 @@
 <?php
-declare(strict_types=1);
 
 namespace Kata\Potter;
 
 class Cart {
-    public const BOOK_PRICES = 8.0;
+    private const BOOK_PRICES = 8.0;
     private const DISCOUNT = array(1, 1, 0.95, 0.9, 0.8, 0.75);
 
     private $bookStack;
 
-    public function __construct()
-    {
-        $this->bookStack = \array_fill(0, 5, 0);
+    public function __construct() {
+        $this->bookStack = \array_fill(0, 5, 0);    
     }
 
+    public function checkout(array $shoppingCart): float {
+        $this->integrateBookStak($shoppingCart);
 
-    public function checkout(array $shoppingCart) {
-        foreach ($shoppingCart as $eachBook) {
-            $this->bookStack[$eachBook]++;
-        }
-
-        $prices = 0;
-        $isBookStackEmpty = false;
-        $preservedBookStack = 0;
-        while (!$isBookStackEmpty) {
-            $checkingOutStack = 0;
-            for ($bookIndex = 0; $bookIndex < \count($this->bookStack); $bookIndex++) {
-                if ($this->bookStack[$bookIndex] > 0) {
-                    $this->bookStack[$bookIndex]--;
-                    $checkingOutStack++;
+        $total = 0.0;
+        $isEmptyBookStack = false;
+        $preserveBooks = 0;
+        while (!$isEmptyBookStack) {
+            $checkingOutBooks = $this->getCheckingOutBooks();
+            if ($checkingOutBooks > 0) {
+                if (5 == $checkingOutBooks) {
+                    $preserveBooks++;
+                }
+                else if (3 == $checkingOutBooks && $preserveBooks > 0) {
+                    $preserveBooks--;
+                    $total += 2 * $this->calculateBooksPrices(4);
+                }
+                else {
+                    $total += $this->calculateBooksPrices($checkingOutBooks);
                 }
             }
-
-            if (0 === $checkingOutStack) {
-                $isBookStackEmpty = true;
-            }
-            else if (5 === $checkingOutStack) {
-                $preservedBookStack += 1;
-            }
-            else if (3 === $checkingOutStack  && $preservedBookStack > 0) {
-                $preservedBookStack -= 1;
-                $prices += $this->calculateBookStackPrices(4) * 2;
-            }
             else {
-                $prices += $this->calculateBookStackPrices($checkingOutStack);
+                $isEmptyBookStack = true;
             }
         }
 
-        $prices += $this->calculateBookStackPrices(5) * $preservedBookStack;
-        return $prices;
+        if ($preserveBooks > 0) {
+            $total += $preserveBooks * $this->calculateBooksPrices(5);
+        }
+        return $total;
     }
 
+    private function integrateBookStak($cart): void {
+        foreach ($cart as $bookIndex) {
+            $this->bookStack[$bookIndex]++;
+        }
+    }
 
-    private function calculateBookStackPrices(int $checkingOutStack) {
-        return self::BOOK_PRICES * $checkingOutStack * self::DISCOUNT[$checkingOutStack];
+    private function getCheckingOutBooks(): int {
+        $checkingOutBooks = 0;
+        for ($bookIndex = 0; $bookIndex < \count($this->bookStack); $bookIndex++) {
+            if ($this->bookStack[$bookIndex] > 0) {
+                $this->bookStack[$bookIndex]--;
+                $checkingOutBooks++;
+            }
+        }
+        return $checkingOutBooks;
+    }
+
+    private function calculateBooksPrices($bookSize): float {
+        return self::BOOK_PRICES * $bookSize * self::DISCOUNT[$bookSize];
     }
 }
+?>
