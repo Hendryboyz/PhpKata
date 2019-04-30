@@ -1,5 +1,5 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 use Kata\Potter\Cart;
@@ -7,7 +7,7 @@ use Kata\Potter\Cart;
 class PotterKataTest extends TestCase {
 
     private $cart;
-
+    
     public function testCanCreate(): void {
         $this->cart = new Cart();
         $this->assertNotNull($this->cart);
@@ -21,6 +21,11 @@ class PotterKataTest extends TestCase {
         $this->checkoutAndAssert([0], 8.0);
     }
 
+    private function checkoutAndAssert(array $books, float $expected): void {
+        $prices = $this->cart->checkout($books);
+        $this->assertEquals($expected, $prices);
+    }
+
     /**
      * @dataProvider sameBookOrder
      */
@@ -29,11 +34,6 @@ class PotterKataTest extends TestCase {
         float $expected
     ): void {
         $this->checkoutAndAssert($books, $expected);
-    }
-
-    private function checkoutAndAssert(array $books, float $expected): void {
-        $prices = $this->cart->checkout($books);
-        $this->assertEquals($expected, $prices);
     }
 
     public function sameBookOrder(): array {
@@ -73,7 +73,7 @@ class PotterKataTest extends TestCase {
     ): void {
         $this->checkoutAndAssert($books, $expected);
     }
-
+    
     public function multipleDiscount(): array {
         return array(
             array([0, 0, 1], 8 + (8 * 2 * 0.95)),

@@ -1,35 +1,32 @@
 <?php
-
 namespace Kata\Potter;
 
 class Cart {
-    private const BOOK_PRICES = 8.0;
-    private const DISCOUNT = array(1, 1, 0.95, 0.9, 0.8, 0.75);
 
-    private $bookStack;
+    private const BOOK_PRICES = 8.0;
+    private const DISCOUNT = array(1, 1, .95, .9, .8, .75);
 
     public function __construct() {
-        $this->bookStack = \array_fill(0, 5, 0);    
+        ;
     }
 
     public function checkout(array $shoppingCart): float {
-        $this->integrateBookStak($shoppingCart);
-
-        $total = 0.0;
+        $bookStack = $this->collectBookStack($shoppingCart);
+        $prices = 0;
         $isEmptyBookStack = false;
         $preserveBooks = 0;
         while (!$isEmptyBookStack) {
-            $checkingOutBooks = $this->getCheckingOutBooks();
+            $checkingOutBooks = $this->collectCheckoutBook($bookStack);
             if ($checkingOutBooks > 0) {
-                if (5 == $checkingOutBooks) {
+                if ($this->isFullSerial($checkingOutBooks)) {
                     $preserveBooks++;
                 }
-                else if (3 == $checkingOutBooks && $preserveBooks > 0) {
+                else if ($this->isSpcialDiscount($preserveBooks, $checkingOutBooks)) {
                     $preserveBooks--;
-                    $total += 2 * $this->calculateBooksPrices(4);
+                    $prices +=  2 * $this->calculateBookStackPrices(4);
                 }
                 else {
-                    $total += $this->calculateBooksPrices($checkingOutBooks);
+                    $prices += $this->calculateBookStackPrices($checkingOutBooks);
                 }
             }
             else {
@@ -38,30 +35,41 @@ class Cart {
         }
 
         if ($preserveBooks > 0) {
-            $total += $preserveBooks * $this->calculateBooksPrices(5);
+            $prices +=  $preserveBooks * $this->calculateBookStackPrices(5);
         }
-        return $total;
+
+        return $prices;
     }
 
-    private function integrateBookStak($cart): void {
-        foreach ($cart as $bookIndex) {
-            $this->bookStack[$bookIndex]++;
+    private function collectBookStack(array $shoppingCart): array {
+        $bookStack = array_fill(0, 5, 0);    
+        foreach ($shoppingCart as $eachBook) {
+            $bookStack[$eachBook]++;
         }
+        return $bookStack;
     }
 
-    private function getCheckingOutBooks(): int {
+    private function collectCheckoutBook(array &$bookStack): int {
         $checkingOutBooks = 0;
-        for ($bookIndex = 0; $bookIndex < \count($this->bookStack); $bookIndex++) {
-            if ($this->bookStack[$bookIndex] > 0) {
-                $this->bookStack[$bookIndex]--;
+        for ($bookIndex = 0; $bookIndex < 5; $bookIndex++) {
+            if ($bookStack[$bookIndex] > 0) {
+                $bookStack[$bookIndex]--;
                 $checkingOutBooks++;
             }
         }
         return $checkingOutBooks;
     }
 
-    private function calculateBooksPrices($bookSize): float {
-        return self::BOOK_PRICES * $bookSize * self::DISCOUNT[$bookSize];
+    private function isFullSerial($checkingOutBooks) {
+        return 5 == $checkingOutBooks;
+    }
+
+    private function isSpcialDiscount($preserveBooks, $checkingOutBooks): bool {
+        return 3 == $checkingOutBooks && 0 < $preserveBooks;
+    }
+
+    private function calculateBookStackPrices($bookCount): float {
+        return $bookCount * self::BOOK_PRICES * self::DISCOUNT[$bookCount];
     }
 }
 ?>
