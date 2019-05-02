@@ -1,32 +1,35 @@
-<?php
+<?php 
+declare(strict_types = 1);
+
 namespace Kata\Potter;
 
 class Cart {
 
-    private const BOOK_PRICES = 8.0;
-    private const DISCOUNT = array(1, 1, .95, .9, .8, .75);
+    private const WHOLE_SERIES_COUNT = 5;
+    private const BOOK_PRICE = 8.0;
+    private const DISCOUNT = array(1, 1, 0.95, 0.9, 0.8, 0.75);
 
     public function __construct() {
-        ;
+        
     }
 
     public function checkout(array $shoppingCart): float {
         $bookStack = $this->collectBookStack($shoppingCart);
-        $prices = 0;
+        $total = 0.0;
         $isEmptyBookStack = false;
-        $preserveBooks = 0;
+        $preserveBookStack = 0;
         while (!$isEmptyBookStack) {
-            $checkingOutBooks = $this->collectCheckoutBook($bookStack);
+            $checkingOutBooks = $this->getCheckingOutBooks($bookStack);
             if ($checkingOutBooks > 0) {
-                if ($this->isFullSerial($checkingOutBooks)) {
-                    $preserveBooks++;
+                if ($this->isWholeSeries($checkingOutBooks)) {
+                    $preserveBookStack++;
                 }
-                else if ($this->isSpcialDiscount($preserveBooks, $checkingOutBooks)) {
-                    $preserveBooks--;
-                    $prices +=  2 * $this->calculateBookStackPrices(4);
+                else if ($this->isSpecialDiscount($checkingOutBooks, $preserveBookStack)) {
+                    $preserveBookStack--;
+                    $total += 2 * $this->calculateBookPirce(4);
                 }
                 else {
-                    $prices += $this->calculateBookStackPrices($checkingOutBooks);
+                    $total += $this->calculateBookPirce($checkingOutBooks);
                 }
             }
             else {
@@ -34,24 +37,27 @@ class Cart {
             }
         }
 
-        if ($preserveBooks > 0) {
-            $prices +=  $preserveBooks * $this->calculateBookStackPrices(5);
+        if ($preserveBookStack > 0) {
+            $total += $preserveBookStack * $this->calculateBookPirce(5);
         }
 
-        return $prices;
+        return $total;
     }
 
     private function collectBookStack(array $shoppingCart): array {
-        $bookStack = array_fill(0, 5, 0);    
+        $bookStack = array_fill(0, self::WHOLE_SERIES_COUNT, 0);
         foreach ($shoppingCart as $eachBook) {
+            if (self::WHOLE_SERIES_COUNT <= $eachBook) {
+                throw new \InvalidArgumentException();
+            }
             $bookStack[$eachBook]++;
         }
         return $bookStack;
     }
 
-    private function collectCheckoutBook(array &$bookStack): int {
+    private function getCheckingOutBooks(array &$bookStack): int {
         $checkingOutBooks = 0;
-        for ($bookIndex = 0; $bookIndex < 5; $bookIndex++) {
+        for ($bookIndex = 0; $bookIndex < count($bookStack); $bookIndex++) {
             if ($bookStack[$bookIndex] > 0) {
                 $bookStack[$bookIndex]--;
                 $checkingOutBooks++;
@@ -60,16 +66,16 @@ class Cart {
         return $checkingOutBooks;
     }
 
-    private function isFullSerial($checkingOutBooks) {
-        return 5 == $checkingOutBooks;
+    private function isWholeSeries($bookCount): bool {
+        return self::WHOLE_SERIES_COUNT == $bookCount;
     }
 
-    private function isSpcialDiscount($preserveBooks, $checkingOutBooks): bool {
-        return 3 == $checkingOutBooks && 0 < $preserveBooks;
+    private function isSpecialDiscount($bookCount, $preserveSeries): bool {
+        return 3 == $bookCount && $preserveSeries > 0;
     }
 
-    private function calculateBookStackPrices($bookCount): float {
-        return $bookCount * self::BOOK_PRICES * self::DISCOUNT[$bookCount];
+    private function calculateBookPirce(int $booksCount): float {
+        return $booksCount * self::BOOK_PRICE * self::DISCOUNT[$booksCount];
     }
 }
 ?>
