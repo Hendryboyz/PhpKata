@@ -6,7 +6,7 @@ use Kata\Potter\Cart;
 class PotterKataTest extends TestCase {
 
     private $cart;
-    
+
     public function testCanCreate(): void {
         $this->cart = new Cart();
         $this->assertNotNull($this->cart);
@@ -28,7 +28,7 @@ class PotterKataTest extends TestCase {
     /**
      * @dataProvider sameBookOrder
      */
-    public function testGivenSameBookOrder_WhenCheckout_ThenReturnTotal(
+    public function testGivenSameBookOrder_WhenCheckout_ThenReturnPrices(
         array $books,
         float $expected
     ): void {
@@ -47,7 +47,7 @@ class PotterKataTest extends TestCase {
     /**
      * @dataProvider basicDiscount
      */
-    public function testGivenBasicDiscount_WhenCheckout_ThenReturnDiscountTotal(
+    public function testGivenBasicDiscount_WhenCheckout_ThenReturnDiscount(
         array $books,
         float $expected
     ): void {
@@ -66,13 +66,13 @@ class PotterKataTest extends TestCase {
     /**
      * @dataProvider multipleDiscount
      */
-    public function testGivenMultipleDiscount_WhenCheckout_ThenReturnDiscountTotal(
+    public function testGivenMultipleDiscount_WhenCheckout_ThenReturnDiscountPrices(
         array $books,
         float $expected
     ): void {
         $this->checkoutAndAssert($books, $expected);
     }
-    
+
     public function multipleDiscount(): array {
         return array(
             array([0, 0, 1], 8 + (8 * 2 * 0.95)),
@@ -89,7 +89,7 @@ class PotterKataTest extends TestCase {
         array $books,
         float $expected
     ): void {
-        $this->checkoutAndAssert($books, $expected);    
+        $this->checkoutAndAssert($books, $expected);
     }
 
     public function specialDiscount(): array {
@@ -103,9 +103,8 @@ class PotterKataTest extends TestCase {
         );
     }
 
-    public function testGivenIndexNotInSeries_WhenCheckout_ThenThrowInvalidArgumentException(): void {
+    public function testGivenBookNotInSeries_WhenCheckout_ThenThrowInvalidArgumentException() {
         $this->expectException(\InvalidArgumentException::class);
         $this->cart->checkout([6]);
     }
 }
-?>
